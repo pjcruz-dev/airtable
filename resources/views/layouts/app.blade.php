@@ -77,6 +77,9 @@
                         <a href="{{ route('forms.index') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                             Forms
                         </a>
+                        <a href="{{ route('activity-logs.index') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            Activity Logs
+                        </a>
                         <a href="{{ route('forms.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
                             Create Form
                         </a>

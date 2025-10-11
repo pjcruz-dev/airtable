@@ -317,8 +317,8 @@
 <div id="field-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Edit Field</h3>
-            <form id="field-form">
+            <h3 id="modal-title" class="text-lg font-medium text-gray-900 mb-4">Edit Field</h3>
+            <form id="field-form" onsubmit="handleFieldFormSubmit(event)">
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Field Type</label>
@@ -434,83 +434,67 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function addFieldToForm(type) {
-    const fieldName = prompt('Enter field name (e.g., "company_name"):');
-    if (!fieldName) return;
+    // Clear form and set up for new field
+    document.getElementById('field-form').reset();
+    document.getElementById('field-type').value = type;
+    document.getElementById('options-container').classList.add('hidden');
     
-    const fieldLabel = prompt('Enter field label (e.g., "Company Name"):');
-    if (!fieldLabel) return;
+    // Set current field ID to null for new field
+    currentFieldId = null;
+    currentFieldType = type;
     
-    const isRequired = confirm('Is this field required?');
+    // Update modal title
+    document.getElementById('modal-title').textContent = 'Add New Field';
     
-    let options = null;
-    if (type === 'select' || type === 'multiselect' || type === 'checkbox' || type === 'radio') {
-        // Create a better interface for multiple options
-        let optionsText = '';
-        let optionCount = 1;
-        
-        while (true) {
-            const option = prompt(`Enter option ${optionCount} (leave empty to finish):\n\nCurrent options:\n${optionsText}`);
-            if (!option || option.trim() === '') break;
-            
-            optionsText += (optionsText ? '\n' : '') + option.trim();
-            optionCount++;
-        }
-        
-        if (optionsText) {
-            options = optionsText.split('\n').filter(opt => opt.trim() !== '');
-        }
-    }
+    // Show/hide options based on field type
+    toggleOptionsContainer();
     
-    const formData = new FormData();
-    formData.append('name', fieldName);
-    formData.append('label', fieldLabel);
-    formData.append('type', type);
-    formData.append('is_required', isRequired ? '1' : '0');
-    if (options) {
-        formData.append('options', JSON.stringify(options));
-    }
-    formData.append('_token', window.Laravel.csrfToken);
-    
-    fetch(`{{ route('form-fields.store', $form->slug) }}`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        return response.text().then(text => {
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
-            }
-        });
-    })
-    .then(data => {
-        if (data.errors) {
-            console.error('Validation errors:', data.errors);
-            alert('Validation errors: ' + JSON.stringify(data.errors));
-        } else if (data.error) {
-            console.error('Server error:', data.error);
-            alert('Server error: ' + data.error);
-        } else {
-            location.reload();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error adding field: ' + error.message);
-    });
+    // Show the modal
+    document.getElementById('field-modal').classList.remove('hidden');
 }
 
 function editField(fieldId) {
-    // This would open the modal with field data
-    // For now, we'll just show an alert
-    alert('Edit field functionality will be implemented');
+    // Fetch field data and populate the modal
+    fetch(`{{ url('forms/' . $form->slug . '/fields') }}/${fieldId}`)
+        .then(response => response.json())
+        .then(field => {
+            // Populate the modal with field data
+            document.getElementById('field-type').value = field.type;
+            document.getElementById('field-label').value = field.label;
+            document.getElementById('field-name').value = field.name;
+            document.getElementById('field-description').value = field.description || '';
+            document.getElementById('field-required').checked = field.is_required;
+            
+            // Handle options for fields that have them
+            if (field.options && Array.isArray(field.options)) {
+                document.getElementById('field-options').value = field.options.join('\n');
+                document.getElementById('options-container').classList.remove('hidden');
+            } else {
+                document.getElementById('field-options').value = '';
+                document.getElementById('options-container').classList.add('hidden');
+            }
+            
+            // Set current field ID for update
+            currentFieldId = fieldId;
+            currentFieldType = field.type;
+            
+            // Update modal title
+            document.getElementById('modal-title').textContent = 'Edit Field';
+            
+            // Show the modal
+            document.getElementById('field-modal').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error fetching field:', error);
+            alert('Error loading field data');
+        });
 }
 
 // Show/hide options container based on field type
 function toggleOptionsContainer(fieldType) {
+    const fieldTypeValue = fieldType || document.getElementById('field-type').value;
     const optionsContainer = document.getElementById('options-container');
-    if (fieldType === 'select' || fieldType === 'checkbox' || fieldType === 'radio') {
+    if (fieldTypeValue === 'select' || fieldTypeValue === 'multiselect' || fieldTypeValue === 'checkbox' || fieldTypeValue === 'radio') {
         optionsContainer.classList.remove('hidden');
     } else {
         optionsContainer.classList.add('hidden');
@@ -559,6 +543,65 @@ function updateFieldOrder() {
 
 function closeFieldModal() {
     document.getElementById('field-modal').classList.add('hidden');
+    currentFieldId = null;
+    currentFieldType = null;
+    // Clear form
+    document.getElementById('field-form').reset();
+    document.getElementById('options-container').classList.add('hidden');
+}
+
+function handleFieldFormSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('name', document.getElementById('field-name').value);
+    formData.append('label', document.getElementById('field-label').value);
+    formData.append('type', document.getElementById('field-type').value);
+    formData.append('description', document.getElementById('field-description').value);
+    formData.append('is_required', document.getElementById('field-required').checked ? '1' : '0');
+    
+    // Handle options
+    const optionsText = document.getElementById('field-options').value;
+    if (optionsText.trim()) {
+        const options = optionsText.split('\n').filter(opt => opt.trim() !== '');
+        formData.append('options', JSON.stringify(options));
+    }
+    
+    formData.append('_token', window.Laravel.csrfToken);
+    
+    const url = currentFieldId 
+        ? `{{ url('forms/' . $form->slug . '/fields') }}/${currentFieldId}`
+        : `{{ route('form-fields.store', $form->slug) }}`;
+    
+    const method = currentFieldId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        body: formData
+    })
+    .then(response => response.text().then(text => {
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+        }
+    }))
+    .then(data => {
+        if (data.errors) {
+            console.error('Validation errors:', data.errors);
+            alert('Validation errors: ' + JSON.stringify(data.errors));
+        } else if (data.error) {
+            console.error('Server error:', data.error);
+            alert('Server error: ' + data.error);
+        } else {
+            closeFieldModal();
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving field: ' + error.message);
+    });
 }
 </script>
 @endpush

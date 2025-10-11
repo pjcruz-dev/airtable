@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Form;
 use App\Models\FormField;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 
 class FormFieldController extends Controller
@@ -41,6 +42,9 @@ class FormFieldController extends Controller
                 'sort_order' => $form->fields()->count(),
             ]);
 
+            // Log the field creation
+            ActivityLogger::logFieldCreated($field, $form, null, $request);
+
             return response()->json($field);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -51,6 +55,14 @@ class FormFieldController extends Controller
                 'error' => 'An error occurred while creating the field: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Display the specified field
+     */
+    public function show(Form $form, FormField $field)
+    {
+        return response()->json($field);
     }
 
     /**

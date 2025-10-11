@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Form;
 use App\Models\FormField;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -41,6 +42,9 @@ class FormController extends Controller
             'description' => $request->description,
             'slug' => Str::slug($request->name),
         ]);
+
+        // Log the form creation
+        ActivityLogger::logFormCreated($form, null, $request);
 
         return redirect()->route('forms.builder', $form)->with('success', 'Form created successfully!');
     }

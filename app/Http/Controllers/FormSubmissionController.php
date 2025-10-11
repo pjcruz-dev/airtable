@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Form;
 use App\Models\FormSubmission;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class FormSubmissionController extends Controller
@@ -74,6 +76,9 @@ class FormSubmissionController extends Controller
             'data' => $data,
             'submitted_by' => $request->submitted_by,
         ]);
+
+        // Log the form submission
+        ActivityLogger::logFormSubmitted($submission, $form, null, $request);
 
         return response()->json([
             'success' => true,

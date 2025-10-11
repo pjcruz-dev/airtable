@@ -15,6 +15,8 @@ Route::get('/', function () {
 Route::resource('forms', FormController::class);
 Route::get('forms/{form}/builder', [FormController::class, 'builder'])->name('forms.builder');
 Route::get('forms/{form}/vendor-form', [FormController::class, 'vendorForm'])->name('forms.vendor-form');
+Route::post('forms/{form}/publish', [FormController::class, 'publish'])->name('forms.publish');
+Route::post('forms/{form}/unpublish', [FormController::class, 'unpublish'])->name('forms.unpublish');
 
 // Form Field Routes
 Route::post('forms/{form}/fields', [FormFieldController::class, 'store'])->name('form-fields.store');

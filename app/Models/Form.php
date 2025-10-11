@@ -13,11 +13,13 @@ class Form extends Model
         'description',
         'slug',
         'is_active',
+        'published',
         'settings',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'published' => 'boolean',
         'settings' => 'array',
     ];
 

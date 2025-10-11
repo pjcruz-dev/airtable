@@ -1,8 +1,32 @@
-@extends('layouts.app')
-
-@section('title', $form->name)
-
-@section('content')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $form->name }}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Vite -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <script>
+        window.Laravel = {
+            csrfToken: '{{ csrf_token() }}'
+        };
+    </script>
+</head>
+<body class="font-sans antialiased bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Page Content -->
+        <main class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 <div class="max-w-2xl mx-auto">
     <div class="mb-8 text-center">
         <h1 class="text-3xl font-bold text-gray-900">{{ $form->name }}</h1>
@@ -219,12 +243,11 @@
                 <p class="text-sm">Your submission ID is: <span id="submission-id"></span></p>
             </div>
         </div>
+            </div>
+        </main>
     </div>
-</div>
-@endsection
 
-@push('scripts')
-<script>
+    <script>
 document.getElementById('vendor-form').addEventListener('submit', function(e) {
     e.preventDefault();
     

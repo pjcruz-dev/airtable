@@ -105,11 +105,31 @@ class FormController extends Controller
      */
     public function vendorForm(Form $form)
     {
-        if (!$form->is_active) {
-            abort(404);
+        if (!$form->is_active || !$form->published) {
+            return view('forms.maintenance', compact('form'));
         }
         
         $form->load('fields');
         return view('forms.vendor-form', compact('form'));
+    }
+
+    /**
+     * Publish a form
+     */
+    public function publish(Form $form)
+    {
+        $form->update(['published' => true]);
+        
+        return redirect()->back()->with('success', 'Form published successfully! It is now live and accessible to users.');
+    }
+
+    /**
+     * Unpublish a form
+     */
+    public function unpublish(Form $form)
+    {
+        $form->update(['published' => false]);
+        
+        return redirect()->back()->with('success', 'Form unpublished successfully! It is now under maintenance and not accessible to users.');
     }
 }

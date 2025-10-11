@@ -201,8 +201,35 @@
 
         <!-- Form Builder Area -->
         <div class="flex-1 p-6">
-            <div class="max-w-4xl mx-auto">
-                <div id="form-builder" class="bg-white rounded-lg border-2 border-dashed border-gray-300 min-h-96 p-6">
+            <div class="max-w-6xl mx-auto">
+                <!-- Preview Toggle -->
+                <div class="mb-6 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <h1 class="text-2xl font-bold text-gray-900">{{ $form->name }}</h1>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Preview Mode:</span>
+                            <button id="preview-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" onclick="togglePreview()">
+                                <span id="preview-toggle-slider" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <a href="{{ route('forms.vendor-form', $form) }}" target="_blank" class="px-4 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700">
+                            View Live Form
+                        </a>
+                        <a href="{{ route('forms.submissions', $form) }}" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            View Submissions
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Split Layout -->
+                <div id="builder-layout" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Form Builder -->
+                    <div id="form-builder-panel" class="space-y-4">
+                        <div class="bg-white rounded-lg border border-gray-200 p-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Form Builder</h3>
+                            <div id="form-builder" class="bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 min-h-96 p-6">
                     @if($form->fields->count() > 0)
                         <div id="form-fields" class="space-y-4">
                             @foreach($form->fields as $field)
@@ -307,6 +334,30 @@
                             <p class="text-gray-600">Drag fields from the sidebar to create your form</p>
                         </div>
                     @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Preview Panel -->
+                    <div id="preview-panel" class="space-y-4">
+                        <div class="bg-white rounded-lg border border-gray-200 p-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Live Preview</h3>
+                            <div id="live-preview" class="bg-gray-50 rounded-lg border border-gray-200 p-6 min-h-96">
+                                <div class="space-y-4">
+                                    <div class="text-center py-8">
+                                        <div class="text-gray-400 mb-4">
+                                            <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2">Form Preview</h3>
+                                        <p class="text-gray-600">Add fields to see live preview</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -314,56 +365,123 @@
 </div>
 
 <!-- Field Edit Modal -->
-<div id="field-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 id="modal-title" class="text-lg font-medium text-gray-900 mb-4">Edit Field</h3>
+<div id="field-modal" class="hidden fixed inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800 bg-opacity-75 overflow-y-auto h-full w-full z-50 backdrop-blur-lg flex items-start justify-center pt-20" onclick="closeModalOnBackdrop(event)">
+    <div class="relative mx-auto p-5 border-0 w-96 shadow-2xl rounded-xl bg-white transform transition-all duration-300 ease-out ring-1 ring-gray-200">
+        <div class="p-6 bg-gradient-to-br from-white to-gray-50 rounded-xl">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                    </div>
+                    <h3 id="modal-title" class="text-xl font-bold text-gray-900">Edit Field</h3>
+                </div>
+                <button onclick="closeFieldModal()" class="text-gray-400 hover:text-gray-600 transition-all duration-200 p-2 rounded-full hover:bg-gray-100 hover:scale-110">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
             <form id="field-form" onsubmit="handleFieldFormSubmit(event)">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Field Type</label>
-                        <select id="field-type" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleOptionsContainer()">
-                            <option value="text">Text Input</option>
-                            <option value="email">Email</option>
-                            <option value="number">Number</option>
-                            <option value="textarea">Textarea</option>
-                            <option value="select">Single Select Dropdown</option>
-                            <option value="multiselect">Multi-Select Dropdown</option>
-                            <option value="checkbox">Checkbox Group</option>
-                            <option value="single-checkbox">Single Checkbox</option>
-                            <option value="radio">Radio</option>
-                            <option value="date">Date</option>
+                <div class="space-y-6">
+                    <!-- Field Type -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            Field Type
+                        </label>
+                        <select id="field-type" class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white shadow-sm hover:shadow-md" onchange="toggleOptionsContainer()">
+                            <option value="text">📝 Text Input</option>
+                            <option value="email">📧 Email</option>
+                            <option value="number">🔢 Number</option>
+                            <option value="textarea">📄 Textarea</option>
+                            <option value="select">📋 Single Select Dropdown</option>
+                            <option value="multiselect">☑️ Multi-Select Dropdown</option>
+                            <option value="checkbox">☑️ Checkbox Group</option>
+                            <option value="single-checkbox">☑️ Single Checkbox</option>
+                            <option value="radio">🔘 Radio</option>
+                            <option value="date">📅 Date</option>
+                            <option value="file">📎 File Upload</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Field Label</label>
-                        <input type="text" id="field-label" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    <!-- Field Label -->
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            Field Label
+                        </label>
+                        <input type="text" id="field-label" class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 shadow-sm hover:shadow-md" placeholder="Enter field label" required>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Field Name</label>
-                        <input type="text" id="field-name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    <!-- Field Name -->
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            Field Name
+                        </label>
+                        <input type="text" id="field-name" class="w-full px-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 shadow-sm hover:shadow-md" placeholder="Enter field name" required>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea id="field-description" rows="2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+
+                    <!-- Description -->
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-100">
+                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            Description
+                        </label>
+                        <textarea id="field-description" rows="2" class="w-full px-4 py-3 border-2 border-yellow-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200 resize-none shadow-sm hover:shadow-md" placeholder="Optional field description"></textarea>
                     </div>
-                    <div>
-                        <label class="flex items-center">
-                            <input type="checkbox" id="field-required" class="mr-2">
-                            <span class="text-sm font-medium text-gray-700">Required field</span>
+
+                    <!-- Required Field -->
+                    <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-4 border border-gray-200">
+                        <label class="flex items-center cursor-pointer group">
+                            <div class="relative">
+                                <input type="checkbox" id="field-required" class="sr-only">
+                                <div class="w-6 h-6 bg-white border-2 border-gray-300 rounded-lg group-hover:border-blue-500 transition-colors duration-200 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white opacity-0 transition-opacity duration-200" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <span class="ml-3 text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition-colors duration-200">Required field</span>
                         </label>
                     </div>
+
+                    <!-- Options Container -->
                     <div id="options-container" class="hidden">
-                        <label class="block text-sm font-medium text-gray-700">Options (one per line)</label>
-                        <textarea id="field-options" rows="6" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Option 1&#10;Option 2&#10;Option 3&#10;Option 4&#10;Option 5"></textarea>
-                        <p class="mt-1 text-sm text-gray-500">Enter each option on a new line. You can add as many options as needed.</p>
+                        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 border border-indigo-200">
+                            <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                                Options
+                            </label>
+                            <textarea id="field-options" rows="4" class="w-full px-4 py-3 border-2 border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 resize-none shadow-sm hover:shadow-md" placeholder="Option 1&#10;Option 2&#10;Option 3&#10;Option 4&#10;Option 5"></textarea>
+                            <p class="text-xs text-indigo-600 mt-2 flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Enter one option per line
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-6 flex justify-end space-x-3">
-                    <button type="button" onclick="closeFieldModal()" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                <!-- Modal Footer -->
+                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-4">
+                    <button type="button" onclick="closeFieldModal()" class="px-6 py-3 text-gray-700 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-200 font-semibold shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
                         Cancel
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                         Save Field
                     </button>
                 </div>
@@ -449,8 +567,18 @@ function addFieldToForm(type) {
     // Show/hide options based on field type
     toggleOptionsContainer();
     
-    // Show the modal
-    document.getElementById('field-modal').classList.remove('hidden');
+    // Show the modal with animation
+    const modal = document.getElementById('field-modal');
+    const modalContent = modal.querySelector('.relative');
+    
+    modal.classList.remove('hidden');
+    modalContent.style.transform = 'scale(0.95) translateY(-10px)';
+    modalContent.style.opacity = '0';
+    
+    setTimeout(() => {
+        modalContent.style.transform = 'scale(1) translateY(0)';
+        modalContent.style.opacity = '1';
+    }, 10);
 }
 
 function editField(fieldId) {
@@ -481,8 +609,18 @@ function editField(fieldId) {
             // Update modal title
             document.getElementById('modal-title').textContent = 'Edit Field';
             
-            // Show the modal
-            document.getElementById('field-modal').classList.remove('hidden');
+            // Show the modal with animation
+            const modal = document.getElementById('field-modal');
+            const modalContent = modal.querySelector('.relative');
+            
+            modal.classList.remove('hidden');
+            modalContent.style.transform = 'scale(0.95) translateY(-10px)';
+            modalContent.style.opacity = '0';
+            
+            setTimeout(() => {
+                modalContent.style.transform = 'scale(1) translateY(0)';
+                modalContent.style.opacity = '1';
+            }, 10);
         })
         .catch(error => {
             console.error('Error fetching field:', error);
@@ -512,7 +650,9 @@ function deleteField(fieldId) {
         })
         .then(response => response.json())
         .then(data => {
-            location.reload();
+            refreshPreview();
+            // Reload to get updated field data
+            setTimeout(() => location.reload(), 500);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -536,18 +676,39 @@ function updateFieldOrder() {
         },
         body: JSON.stringify({ fields: fieldData })
     })
+    .then(() => {
+        refreshPreview();
+    })
     .catch(error => {
         console.error('Error updating field order:', error);
     });
 }
 
 function closeFieldModal() {
-    document.getElementById('field-modal').classList.add('hidden');
+    const modal = document.getElementById('field-modal');
+    const modalContent = modal.querySelector('.relative');
+    
+    // Add closing animation
+    modalContent.style.transform = 'scale(0.95) translateY(-10px)';
+    modalContent.style.opacity = '0';
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modalContent.style.transform = 'scale(1) translateY(0)';
+        modalContent.style.opacity = '1';
+    }, 200);
+    
     currentFieldId = null;
     currentFieldType = null;
     // Clear form
     document.getElementById('field-form').reset();
     document.getElementById('options-container').classList.add('hidden');
+}
+
+function closeModalOnBackdrop(event) {
+    if (event.target === event.currentTarget) {
+        closeFieldModal();
+    }
 }
 
 function handleFieldFormSubmit(event) {
@@ -579,13 +740,19 @@ function handleFieldFormSubmit(event) {
         method: method,
         body: formData
     })
-    .then(response => response.text().then(text => {
-        try {
-            return JSON.parse(text);
-        } catch (e) {
-            throw new Error(`Server returned invalid JSON: ${text.substring(0, 100)}...`);
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    }))
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('Server response:', text);
+                throw new Error(`Server returned invalid JSON. Status: ${response.status}`);
+            }
+        });
+    })
     .then(data => {
         if (data.errors) {
             console.error('Validation errors:', data.errors);
@@ -595,7 +762,9 @@ function handleFieldFormSubmit(event) {
             alert('Server error: ' + data.error);
         } else {
             closeFieldModal();
-            location.reload();
+            refreshPreview();
+            // Reload to get updated field data
+            setTimeout(() => location.reload(), 500);
         }
     })
     .catch(error => {
@@ -603,5 +772,204 @@ function handleFieldFormSubmit(event) {
         alert('Error saving field: ' + error.message);
     });
 }
+
+// Live Preview Functions
+let previewMode = false;
+
+function togglePreview() {
+    previewMode = !previewMode;
+    const toggle = document.getElementById('preview-toggle');
+    const slider = document.getElementById('preview-toggle-slider');
+    const layout = document.getElementById('builder-layout');
+    const previewPanel = document.getElementById('preview-panel');
+    
+    if (previewMode) {
+        toggle.classList.remove('bg-gray-200');
+        toggle.classList.add('bg-blue-600');
+        slider.classList.add('translate-x-5');
+        previewPanel.classList.remove('hidden');
+        layout.classList.remove('grid-cols-1');
+        layout.classList.add('lg:grid-cols-2');
+        updateLivePreview();
+    } else {
+        toggle.classList.remove('bg-blue-600');
+        toggle.classList.add('bg-gray-200');
+        slider.classList.remove('translate-x-5');
+        previewPanel.classList.add('hidden');
+        layout.classList.remove('lg:grid-cols-2');
+        layout.classList.add('grid-cols-1');
+    }
+}
+
+function updateLivePreview() {
+    if (!previewMode) return;
+    
+    const previewContainer = document.getElementById('live-preview');
+    const formFields = document.querySelectorAll('#form-fields .field-item');
+    
+    if (formFields.length === 0) {
+        previewContainer.innerHTML = `
+            <div class="text-center py-8">
+                <div class="text-gray-400 mb-4">
+                    <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Form Preview</h3>
+                <p class="text-gray-600">Add fields to see live preview</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let previewHTML = `
+        <div class="space-y-6">
+            <div class="text-center border-b border-gray-200 pb-4">
+                <h2 class="text-2xl font-bold text-gray-900">{{ $form->name }}</h2>
+                @if($form->description)
+                    <p class="text-gray-600 mt-2">{{ $form->description }}</p>
+                @endif
+            </div>
+            <form class="space-y-6">
+    `;
+    
+    formFields.forEach(fieldElement => {
+        const fieldId = fieldElement.dataset.fieldId;
+        const labelElement = fieldElement.querySelector('.text-sm.font-medium');
+        const typeElement = fieldElement.querySelector('.text-xs.text-gray-500');
+        const previewElement = fieldElement.querySelector('.text-sm.text-gray-600 > *:first-child');
+        
+        if (!labelElement || !typeElement) return;
+        
+        const label = labelElement.textContent.trim();
+        const type = typeElement.textContent.trim().toLowerCase();
+        const isRequired = labelElement.querySelector('.text-red-500') !== null;
+        
+        previewHTML += `
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">
+                    ${label}
+                    ${isRequired ? '<span class="text-red-500">*</span>' : ''}
+                </label>
+        `;
+        
+        // Generate preview input based on type
+        switch(type) {
+            case 'text':
+            case 'email':
+            case 'number':
+                previewHTML += `<input type="${type}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter ${label.toLowerCase()}">`;
+                break;
+            case 'textarea':
+                previewHTML += `<textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Enter ${label.toLowerCase()}"></textarea>`;
+                break;
+            case 'select':
+                previewHTML += `<select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option>Select an option</option>
+                </select>`;
+                break;
+            case 'multiselect':
+                previewHTML += `<select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" multiple>
+                    <option>Select options</option>
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple options</p>`;
+                break;
+            case 'checkbox':
+                previewHTML += `<div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm text-gray-700">Option 1</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm text-gray-700">Option 2</span>
+                    </label>
+                </div>`;
+                break;
+            case 'single-checkbox':
+                previewHTML += `<label class="flex items-center">
+                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm text-gray-700">${label}</span>
+                </label>`;
+                break;
+            case 'radio':
+                previewHTML += `<div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="preview_${fieldId}" class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <span class="text-sm text-gray-700">Option 1</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="preview_${fieldId}" class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <span class="text-sm text-gray-700">Option 2</span>
+                    </label>
+                </div>`;
+                break;
+            case 'date':
+                previewHTML += `<input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">`;
+                break;
+            case 'file':
+                previewHTML += `<div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-600">Click to upload or drag and drop</p>
+                    <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+                </div>`;
+                break;
+        }
+        
+        previewHTML += `</div>`;
+    });
+    
+    previewHTML += `
+            </form>
+            <div class="pt-6 border-t border-gray-200">
+                <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Submit Form
+                </button>
+            </div>
+        </div>
+    `;
+    
+    previewContainer.innerHTML = previewHTML;
+}
+
+// Update preview when fields change
+function refreshPreview() {
+    if (previewMode) {
+        setTimeout(updateLivePreview, 100); // Small delay to ensure DOM is updated
+    }
+}
+
+// Initialize preview on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up observer to watch for changes in form fields
+    const formBuilder = document.getElementById('form-builder');
+    if (formBuilder) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    refreshPreview();
+                }
+            });
+        });
+        
+        observer.observe(formBuilder, {
+            childList: true,
+            subtree: true
+        });
+    }
+    
+    // Add ESC key listener to close modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const modal = document.getElementById('field-modal');
+            if (!modal.classList.contains('hidden')) {
+                closeFieldModal();
+            }
+        }
+    });
+});
 </script>
 @endpush

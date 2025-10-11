@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\FormFieldController;
 use App\Http\Controllers\FormSubmissionController;
+use App\Http\Controllers\FormTemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,3 +47,8 @@ Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('acti
 Route::get('activity-logs/stats', [ActivityLogController::class, 'stats'])->name('activity-logs.stats');
 Route::get('activity-logs/export', [ActivityLogController::class, 'export'])->name('activity-logs.export');
 Route::get('forms/{form}/activity-logs', [ActivityLogController::class, 'form'])->name('forms.activity-logs');
+
+// Form Template Routes
+Route::get('templates', [FormTemplateController::class, 'index'])->name('templates.index');
+Route::post('templates/{template}/create-form', [FormTemplateController::class, 'createForm'])->name('templates.create-form');
+Route::get('templates/{template}/preview', [FormTemplateController::class, 'preview'])->name('templates.preview');

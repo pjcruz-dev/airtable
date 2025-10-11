@@ -56,9 +56,166 @@
             position: relative;
         }
         
-        .field-item.dragging {
+        .dragging {
             transform: rotate(2deg);
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Modal Enhancements */
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modal-content.scale-in {
+            animation: modalScaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modal-content.scale-out {
+            animation: modalScaleOut 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes modalScaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        @keyframes modalScaleOut {
+            from {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+        }
+        
+        /* Enhanced form inputs */
+        .form-input {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .form-input:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        
+        /* Button hover effects */
+        .btn-primary {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Enhanced Modal Styling */
+        .modal-enhanced {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        
+        .modal-content-enhanced {
+            animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        /* Enhanced Input Focus */
+        .input-enhanced:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        
+        /* Button Hover Effects */
+        .btn-enhanced:hover {
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary-enhanced:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* Enhanced Modal Background */
+        .modal-backdrop-enhanced {
+            background: linear-gradient(135deg, #1f2937 0%, #000000 50%, #374151 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        
+        /* Enhanced Modal Content */
+        .modal-content-enhanced {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Enhanced Form Sections */
+        .form-section-blue {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border: 1px solid #bfdbfe;
+        }
+        
+        .form-section-green {
+            background: linear-gradient(135deg, #dcfce7 0%, #ecfdf5 100%);
+            border: 1px solid #bbf7d0;
+        }
+        
+        .form-section-purple {
+            background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+            border: 1px solid #d8b4fe;
+        }
+        
+        .form-section-yellow {
+            background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+            border: 1px solid #fde68a;
+        }
+        
+        .form-section-indigo {
+            background: linear-gradient(135deg, #e0e7ff 0%, #eef2ff 100%);
+            border: 1px solid #c7d2fe;
+        }
+        
+        /* Enhanced Input Focus */
+        .input-enhanced:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+        
+        /* Enhanced Button Hover */
+        .btn-enhanced:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Custom Checkbox */
+        .custom-checkbox input:checked + div {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-color: #3b82f6;
+        }
+        
+        .custom-checkbox input:checked + div svg {
+            opacity: 1;
         }
     </style>
 </head>
@@ -76,6 +233,9 @@
                     <div class="flex items-center space-x-4">
                         <a href="{{ route('forms.index') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                             Forms
+                        </a>
+                        <a href="{{ route('templates.index') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            Templates
                         </a>
                         <a href="{{ route('activity-logs.index') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                             Activity Logs

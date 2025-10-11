@@ -3,6 +3,21 @@
 @section('title', 'Form Builder - ' . $form->name)
 
 @section('content')
+<style>
+    /* Custom Checkbox Enhancement */
+    .checkbox-custom {
+        transition: all 0.2s ease;
+    }
+    
+    .checkbox-custom.checked {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        border-color: #3b82f6;
+    }
+    
+    .checkbox-custom.checked svg {
+        opacity: 1;
+    }
+</style>
 <div class="flex h-screen bg-gray-50">
     <!-- Sidebar -->
     <div class="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto">
@@ -365,18 +380,18 @@
 </div>
 
 <!-- Field Edit Modal -->
-<div id="field-modal" class="hidden fixed inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800 bg-opacity-75 overflow-y-auto h-full w-full z-50 backdrop-blur-lg flex items-start justify-center pt-20" onclick="closeModalOnBackdrop(event)">
-    <div class="relative mx-auto p-5 border-0 w-96 shadow-2xl rounded-xl bg-white transform transition-all duration-300 ease-out ring-1 ring-gray-200">
-        <div class="p-6 bg-gradient-to-br from-white to-gray-50 rounded-xl">
+<div id="field-modal" class="hidden fixed inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-y-auto h-full w-full z-50 backdrop-blur-lg flex items-start justify-center pt-20" onclick="closeModalOnBackdrop(event)" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="relative mx-auto p-3 border-0 w-72 shadow-2xl rounded-xl bg-white transform transition-all duration-300 ease-out ring-1 ring-gray-200">
+        <div class="p-3 bg-gradient-to-br from-white to-gray-50 rounded-xl">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+            <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
                     </div>
-                    <h3 id="modal-title" class="text-xl font-bold text-gray-900">Edit Field</h3>
+                    <h3 id="modal-title" class="text-xl font-bold text-gray-900">Add New Field</h3>
                 </div>
                 <button onclick="closeFieldModal()" class="text-gray-400 hover:text-gray-600 transition-all duration-200 p-2 rounded-full hover:bg-gray-100 hover:scale-110">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -385,10 +400,10 @@
                 </button>
             </div>
             <form id="field-form" onsubmit="handleFieldFormSubmit(event)">
-                <div class="space-y-6">
+                <div class="space-y-3">
                     <!-- Field Type -->
-                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-2 border border-blue-100">
+                        <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center">
                             <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                             </svg>
@@ -410,8 +425,8 @@
                     </div>
 
                     <!-- Field Label -->
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
-                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-2 border border-green-100">
+                        <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center">
                             <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                             </svg>
@@ -421,8 +436,8 @@
                     </div>
 
                     <!-- Field Name -->
-                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
-                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-2 border border-purple-100">
+                        <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center">
                             <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                             </svg>
@@ -432,8 +447,8 @@
                     </div>
 
                     <!-- Description -->
-                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-100">
-                        <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-2 border border-yellow-100">
+                        <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center">
                             <svg class="w-4 h-4 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                             </svg>
@@ -443,11 +458,11 @@
                     </div>
 
                     <!-- Required Field -->
-                    <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-4 border border-gray-200">
+                    <div class="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-3 border border-gray-200">
                         <label class="flex items-center cursor-pointer group">
                             <div class="relative">
-                                <input type="checkbox" id="field-required" class="sr-only">
-                                <div class="w-6 h-6 bg-white border-2 border-gray-300 rounded-lg group-hover:border-blue-500 transition-colors duration-200 flex items-center justify-center">
+                                <input type="checkbox" id="field-required" class="sr-only" onchange="toggleCheckbox(this)">
+                                <div class="w-6 h-6 bg-white border-2 border-gray-300 rounded-lg group-hover:border-blue-500 transition-all duration-200 flex items-center justify-center checkbox-custom">
                                     <svg class="w-4 h-4 text-white opacity-0 transition-opacity duration-200" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                                     </svg>
@@ -459,8 +474,8 @@
 
                     <!-- Options Container -->
                     <div id="options-container" class="hidden">
-                        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 border border-indigo-200">
-                            <label class="block text-sm font-bold text-gray-800 mb-3 flex items-center">
+                        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-3 border border-indigo-200">
+                            <label class="block text-sm font-bold text-gray-800 mb-2 flex items-center">
                                 <svg class="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                 </svg>
@@ -477,11 +492,11 @@
                     </div>
                 </div>
                 <!-- Modal Footer -->
-                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-4">
-                    <button type="button" onclick="closeFieldModal()" class="px-6 py-3 text-gray-700 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-200 font-semibold shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                <div class="mt-6 pt-4 border-t border-gray-200 flex justify-end space-x-3">
+                    <button type="button" onclick="closeFieldModal()" class="px-4 py-2 text-gray-700 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-200 font-semibold shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
                         Cancel
                     </button>
-                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <button type="submit" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                         Save Field
                     </button>
                 </div>
@@ -556,6 +571,11 @@ function addFieldToForm(type) {
     document.getElementById('field-form').reset();
     document.getElementById('field-type').value = type;
     document.getElementById('options-container').classList.add('hidden');
+    
+    // Reset checkbox visual state
+    const checkbox = document.getElementById('field-required');
+    const checkboxDiv = checkbox.nextElementSibling;
+    checkboxDiv.classList.remove('checked');
     
     // Set current field ID to null for new field
     currentFieldId = null;
@@ -636,6 +656,16 @@ function toggleOptionsContainer(fieldType) {
         optionsContainer.classList.remove('hidden');
     } else {
         optionsContainer.classList.add('hidden');
+    }
+}
+
+// Toggle checkbox visual state
+function toggleCheckbox(checkbox) {
+    const checkboxDiv = checkbox.nextElementSibling;
+    if (checkbox.checked) {
+        checkboxDiv.classList.add('checked');
+    } else {
+        checkboxDiv.classList.remove('checked');
     }
 }
 
